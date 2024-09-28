@@ -43,8 +43,8 @@ def load_csv_files(directory, file_prefix="ctg_tick", file_extension=".csv"):
                     ## convert price and size to floats
                     ## check if either value is empty or a weird value, if it is, convert it to the value in the line before it (line after if it is first line)
                     for line in range(0, len(file_data)):
-                        ## if empty or negative or not in the hundreds
-                        if ((file_data[line][1] == '') or ('-' in file_data[line][1]) or (file_data[line][1][3] != '.')):
+                        ## if empty
+                        if (file_data[line][1] == ''):
                             if line != 0:
                                 file_data[line][1] = file_data[line-1][1]
                             else:
@@ -53,15 +53,19 @@ def load_csv_files(directory, file_prefix="ctg_tick", file_extension=".csv"):
                                     if file_data[line+n][1] != '':
                                         file_data[line][1] = file_data[line+n][1] 
 
+                        # if negative
+                        if ('-' in file_data[line][1]):
+                            # remove '-' from string
+                            file_data[line][1] = file_data[line][1][1:]
+                        # if decimal in wrong spot
+                        if (file_data[line][1][3] != '.'): 
+                            # switch . with number 
+                            file_data[line][1][2], file_data[line][1][3] = file_data[line][1][3], file_data[line][1][2]
+                            
+
                         ## convert price and volume to float and int respectively
                         file_data[line][1] = float(file_data[line][1])
                         file_data[line][2] = int(file_data[line][2])
-                            
-
-                        ## check if value is considerable diff than one before, change it if it is
-                        #if line != 0:
-                            #if (abs(file_data[line][1] - file_data[line-1][1])) > 100:
-                                #file_data[line][1] = file_data[line-1][1]
 
 
                     data.extend(file_data)
@@ -76,6 +80,7 @@ def load_csv_files(directory, file_prefix="ctg_tick", file_extension=".csv"):
 # Example usage:
 directory_path = "data"
 loaded_data = load_csv_files("data")
+print(loaded_data)
 
 #TODO implement validation checks for data loading
 #TODO data interface development
